@@ -14,7 +14,11 @@ public class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(Events, this);
 		getCommand("MineFestival").setExecutor(Commands);
 		
-		
 		hasStarted = false;
+	}
+	
+	public void start() {
+		hasStarted = true;
+		//DO STUFF
 	}
 }

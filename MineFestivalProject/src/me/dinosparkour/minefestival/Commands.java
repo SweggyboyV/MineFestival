@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Commands implements CommandExecutor {
 
@@ -16,56 +17,35 @@ public class Commands implements CommandExecutor {
 		plugin = instance;
 	}
 
-	int left = 30;
-	
-	public void startTimer() {
-		new Runnable() {
-			public int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 0L, 20L);
+	private final int COUNTDOWN_TIME = 30;
+	private final int BROADCAST_INTERVAL = 5; /* You want to broadcast each x seconds. That's now 5 */
 
-			float tone = 1.033F;
-			
-			public void run() {
-				if(left == 0) tone = 2.033F;
-				
-				if(left <= 3) {	
-					for(Player p : Bukkit.getOnlinePlayers()) {
-						p.playSound(p.getLocation(), Sound.NOTE_PIANO, 3F, tone);
+	/**
+	 * Start the countdown for ONE player, you can also start this for every person online
+	 * @param p Player object
+	 */
+	public void startCountdown(final Player p){
+		new BukkitRunnable(){
+			int time = COUNTDOWN_TIME + 1; /* Set a variable 'time' */
+			public void run(){
+				time--; /* Remove time */
+				if(time > 0){
+					if(time % BROADCAST_INTERVAL == 0 || time <= 5){
+						/* If it's divisible is 5, OR or the time is smaller than 6*/
+						StringBuilder sb = new StringBuilder();
+						sb.append(ChatColor.GREEN).append(time).append(" second(s) until the game begins!");
+						String startMessage = sb.toString();
+						Bukkit.broadcastMessage(startMessage);
+						p.playSound(p.getEyeLocation(), Sound.NOTE_PIANO, 3F, 2.533F);
+						/* In this case, 30, 25, 20, 15, 10, 5, 4, 3, 2 1*/
 					}
-				}
-				
-				if (left > 0) {
-					switch (left) {
-					case 30:
-						Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting in 30 seconds!");
-						break;
-					case 15:
-						Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting in 15 seconds!");
-						break;
-					case 10:
-						Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting in 10 seconds!");
-						break;
-					case 5:
-						Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting in 5 seconds!");
-						break;
-					case 3:
-						Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting in 3 seconds!");
-						break;
-					case 2:
-						Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting in 2 seconds!");
-						break;
-					case 1:
-						Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting in 1 second!");
-						break;
-					}
-					left--;
-
-				} else {
-					Bukkit.getScheduler().cancelTask(taskID);
-					Bukkit.broadcastMessage(ChatColor.RED + "The game has started!");
-					plugin.hasStarted = true;
+				}else{
+					/* Time over */
+					this.cancel();
+					plugin.start();
 				}
 			}
-		};
+		}.runTaskTimer(plugin, 0, 20); /* 20 ticks = 1 second*/
 	}
 
 	@Override
@@ -78,14 +58,12 @@ public class Commands implements CommandExecutor {
 			} else {
 				if(sender.hasPermission("minefestival." + args[0]) || sender.isOp()) {
 					if(args[0].equalsIgnoreCase("countdown")) {
-						startTimer();
+						for(Player p : Bukkit.getOnlinePlayers()) {
+							this.startCountdown(p);
+						}
 
 					} else if(args[0].equalsIgnoreCase("reset")) {
-						if(left != 30){
-							Bukkit.getScheduler().cancelAllTasks();
-							sender.sendMessage(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Cancelled countdown.");
-						}
-						left = 30;
+						sender.sendMessage(ChatColor.DARK_RED + "Reset the MineFestival!");
 					}
 
 				} else {
