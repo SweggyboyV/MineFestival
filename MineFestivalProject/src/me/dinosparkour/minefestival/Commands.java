@@ -64,6 +64,7 @@ public class Commands implements CommandExecutor {
 
 					} else if(args[0].equalsIgnoreCase("reset")) {
 						sender.sendMessage(ChatColor.DARK_RED + "Reset the MineFestival!");
+						plugin.end();
 					}
 
 				} else {

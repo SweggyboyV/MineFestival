@@ -7,18 +7,22 @@ public class Main extends JavaPlugin {
 	private Events Events = new Events(this);
 	private Commands Commands = new Commands(this);
 	
-	public boolean hasStarted;
+	public boolean isActive;
 	
 	@Override
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(Events, this);
 		getCommand("MineFestival").setExecutor(Commands);
 		
-		hasStarted = false;
+		isActive = false;
 	}
 	
 	public void start() {
-		hasStarted = true;
+		isActive = true;
 		//DO STUFF
+	}
+	
+	public void end() {
+		isActive = false;
 	}
 }
