@@ -7,10 +7,14 @@ public class Main extends JavaPlugin {
 	private Events Events = new Events(this);
 	private Commands Commands = new Commands(this);
 	
+	public boolean hasStarted;
+	
 	@Override
 	public void onEnable() {
-		this.getServer().getPluginManager().registerEvents(Events, this);
-		this.getCommand("FireTools").setExecutor(Commands);
-		// DO STUFF
+		getServer().getPluginManager().registerEvents(Events, this);
+		getCommand("MineFestival").setExecutor(Commands);
+		
+		
+		hasStarted = false;
 	}
 }
