@@ -4,3 +4,5 @@ main: me.dinosparkour.minefestival.Main
 author: [DinosParkour,SweggyboyV]
 commands:
   MineFestival:
+    description: MineFestival command.
+    aliases: [festival, mf]
